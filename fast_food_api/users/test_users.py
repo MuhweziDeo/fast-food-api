@@ -13,6 +13,7 @@ class ModelTestCase(TestCase):
             "email":"dee@gmail.com"
         }
         self.test_client=Client()
+        self.serializer=serializers.UserSerializer()
 
 
 
