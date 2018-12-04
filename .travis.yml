@@ -7,3 +7,7 @@ env:
 
 install:
     - pip install -r requirements.txt
+
+script:
+    -python fast_food_api/manage.py test
+
