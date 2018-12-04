@@ -9,4 +9,8 @@ install:
     - pip install -r requirements.txt
 
 script:
-    - cd fast_food_api
+    - cd fast-food-api
+    - py.test 
+
+after_success:
+  - coveralls
