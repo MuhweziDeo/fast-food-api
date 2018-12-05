@@ -1,19 +1,18 @@
 from rest_framework.authtoken.models import Token
 from rest_framework import serializers
-from django.contrib.auth.models import User
-
+from . import models
+from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
-    email=serializers.EmailField(max_length=50,min_length=5,allow_blank=False)
     class Meta:
-        model=User
+        model=models.User
         fields=('id','username','email','password')
         extra_kwargs={'password':{'write_only':True}}
         def create(self,validated_data):
-            user=User(
+            user=models.User.objects.create_user(
                 username=validated_data['username'],
                 email=validated_data['email']
             )
-            user.set_password(validated_data['password'])
+            user.set_password(make_password(validated_data['password']))
             user.save
             return user
