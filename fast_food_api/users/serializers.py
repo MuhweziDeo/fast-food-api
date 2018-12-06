@@ -21,4 +21,4 @@ class UserSerializer(serializers.ModelSerializer):
 class MenuSerializer(serializers.ModelSerializer):
     class Meta:
         model=models.Menu
-        fields=('id','menu_name','menu_price')
+        fields=('id','meal_name','meal_price')

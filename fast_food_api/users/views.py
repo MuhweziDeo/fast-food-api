@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from . import serializers
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
@@ -30,4 +31,7 @@ class LoginView(APIView):
         return Response({
             "message":"We cant authenticate u {}".format(username)
         })
-        
+
+class MenuView(viewsets.ModelViewSet):
+    serializer_class=serializers.MenuSerializer
+    queryset=models.Menu.objects.all()
