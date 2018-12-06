@@ -12,6 +12,7 @@ class ModelTestCase(TestCase):
             "password":"Adeo256.",
             "email":"dee@gmail.com"
         }
+       
         self.test_client=Client()
         self.serializer=serializers.UserSerializer()
 
@@ -28,9 +29,16 @@ class ViewTestCase(TestCase):
             "password":"Adeo256.",
             "email":"dee@gmail.com"
         }
+        self.login_data={
+            "username":"dee@gmail.com",
+            "password":"Adeo256."
+        }
     def test_signup(self):
         resp=self.test_client.post(reverse("signup"),content_type='application/json',data=json.dumps(self.user_data))
         self.assertEqual(resp.status_code,201)
         self.assertIn("dee",str(resp.data))
+    def test_login(self):
+        resp=self.client.post(reverse("login"),content_type="application/json",data=json.dumps(self.login_data))
+        self.assertEqual(resp.status_code,200)
 
         
