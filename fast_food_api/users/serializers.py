@@ -17,3 +17,8 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         Token.objects.create(user=user)
         return user
+
+class MenuSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=models.Menu
+        fields=('id','menu_name','menu_price')
