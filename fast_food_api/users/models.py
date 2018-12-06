@@ -29,3 +29,7 @@ class User(AbstractBaseUser,PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+class Menu(models.Model):
+    meal_name=models.CharField(unique=True,max_length=50)
+    meal_price=models.IntegerField()
