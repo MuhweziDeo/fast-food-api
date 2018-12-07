@@ -22,3 +22,8 @@ class MenuSerializer(serializers.ModelSerializer):
     class Meta:
         model=models.Menu
         fields=('id','meal_name','meal_price')
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=models.Order
+        fields=('id','status','location','quantity','owner','meal')
