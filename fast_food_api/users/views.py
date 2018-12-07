@@ -5,6 +5,8 @@ from rest_framework import viewsets
 from . import serializers
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
+from rest_framework import permissions
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from . import models
 # Create your views here.
@@ -35,3 +37,12 @@ class LoginView(APIView):
 class MenuView(viewsets.ModelViewSet):
     serializer_class=serializers.MenuSerializer
     queryset=models.Menu.objects.all()
+
+class OrderView(viewsets.ModelViewSet):
+    authentication_classes=(TokenAuthentication,)
+    serializer_class=serializers.OrderSerializer
+    queryset=models.Order.objects.all()
+    permission_classes=(permissions.IsAuthenticated,)
+
+    def perform_create(self,serializer):
+        serializer.save(owner=self.request.user)
