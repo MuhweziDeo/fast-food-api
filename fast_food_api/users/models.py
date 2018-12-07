@@ -36,3 +36,10 @@ class Menu(models.Model):
 
     def __str__(self):
         return self.meal_name
+
+class Order(models.Model):
+    meal=models.OneToOneField(Menu,on_delete=models.CASCADE)
+    quantity=models.IntegerField()
+    location=models.CharField(max_length=100)
+    status=models.CharField(default="Pending",max_length=20)
+    owner=models.OneToOneField(User,on_delete=models.CASCADE)
