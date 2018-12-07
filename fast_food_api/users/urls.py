@@ -4,6 +4,7 @@ from . import views
 router=DefaultRouter()
 router.register('menu',views.MenuView,base_name='menu')
 router.register('orders',views.OrderView,base_name='orders')
+router.register('users/orders',views.UserOrderView,base_name='user-orders')
 urlpatterns = [
     path('signup/',views.UserView.as_view(),name='signup'),
     path('login/',views.LoginView.as_view(),name='login'),

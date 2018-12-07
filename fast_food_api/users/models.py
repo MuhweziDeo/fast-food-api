@@ -38,9 +38,9 @@ class Menu(models.Model):
         return self.meal_name
 
 class Order(models.Model):
-    meal=models.OneToOneField(Menu,on_delete=models.CASCADE)
+    meal=models.ForeignKey(Menu,related_name="meal",on_delete=models.CASCADE)
     quantity=models.IntegerField()
     location=models.CharField(max_length=100)
     status=models.CharField(default="Pending",max_length=20)
-    owner=models.OneToOneField(User,on_delete=models.CASCADE)
+    owner=models.ForeignKey(User,related_name="user",on_delete=models.CASCADE)
     date_order=models.DateField(auto_now=True)

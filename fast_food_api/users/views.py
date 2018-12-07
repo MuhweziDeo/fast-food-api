@@ -9,6 +9,7 @@ from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from . import models
+from .permissions import IsOwnerOrReadonly
 # Create your views here.
 
 class UserView(generics.CreateAPIView):
@@ -44,5 +45,28 @@ class OrderView(viewsets.ModelViewSet):
     queryset=models.Order.objects.all()
     permission_classes=(permissions.IsAuthenticated,)
 
+    # def perform_create(self,serializer):
+    #     serializer.save(owner=self.request.user)
+
+
+class UserOrderView(viewsets.ModelViewSet):
+    authentication_classes=(TokenAuthentication,)
+    permission_classes=(permissions.IsAuthenticated,IsOwnerOrReadonly,)
+    serializer_class=serializers.OrderSerializer
+    queryset=models.Order.objects.all()
+
     def perform_create(self,serializer):
         serializer.save(owner=self.request.user)
+    def create(self,request):
+        user_order=serializers.OrderSerializer(data=request.data)
+        if user_order.is_valid():
+            user_order.save(owner=self.request.user)
+            return Response(user_order.data)
+        return Response(user_order.errors)
+
+    def list(self,request):
+        queryset=models.Order.objects.filter(owner=request.user)
+        user_orders=serializers.OrderSerializer(queryset,many=True)
+        print(user_orders.data)
+        return Response(user_orders.data)
+        
