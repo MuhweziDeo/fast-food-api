@@ -43,10 +43,17 @@ class OrderView(viewsets.ModelViewSet):
     authentication_classes=(TokenAuthentication,)
     serializer_class=serializers.OrderSerializer
     queryset=models.Order.objects.all()
-    permission_classes=(permissions.IsAuthenticated,)
+    permission_classes=(permissions.IsAuthenticated,permissions.IsAdminUser)
 
     # def perform_create(self,serializer):
     #     serializer.save(owner=self.request.user)
+    def partial_update(self,request,pk=None):
+        order=models.Order.objects.get(id=pk)
+        updated_order=self.serializer_class(order,data=request.data,partial=True)
+        updated_order.is_valid(raise_exception=True)
+        updated_order.save()
+        return Response(updated_order.data)
+
 
 
 class UserOrderView(viewsets.ModelViewSet):
