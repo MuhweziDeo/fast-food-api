@@ -9,9 +9,9 @@ from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from . import models
-from .permissions import IsOwnerOrReadonly
+from .permissions import IsOwner
 # Create your views here.
-
+from django.shortcuts import get_object_or_404
 class UserView(generics.CreateAPIView):
     serializer_class=serializers.UserSerializer
 
@@ -58,7 +58,7 @@ class OrderView(viewsets.ModelViewSet):
 
 class UserOrderView(viewsets.ModelViewSet):
     authentication_classes=(TokenAuthentication,)
-    permission_classes=(permissions.IsAuthenticated,IsOwnerOrReadonly,)
+    permission_classes=(permissions.IsAuthenticated,IsOwner,)
     serializer_class=serializers.OrderSerializer
     queryset=models.Order.objects.all()
 
@@ -74,6 +74,16 @@ class UserOrderView(viewsets.ModelViewSet):
     def list(self,request):
         queryset=models.Order.objects.filter(owner=request.user)
         user_orders=serializers.OrderSerializer(queryset,many=True)
-        print(user_orders.data)
         return Response(user_orders.data)
-        
+
+    # def retrieve(self,request,pk=None):
+    #     order=get_object_or_404(models.Order,pk=pk)
+    #     print(order.owner.id)
+    #     if order.owner.id == request.user.id:
+    #         serializer=serializers.OrderSerializer(order)
+    #         print(request.user.id)
+    #         return Response(serializer.data)
+    #     return Response({
+    #         "message":"U r not authenticated to view this"
+    #     })
+    
