@@ -34,12 +34,10 @@ class UserView(generics.CreateAPIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            print(user.is_active)
             current_site = get_current_site(request)
             subject = 'Activate Your MySite Account'
             domain = current_site.domain
             uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
-            print('######################',uid)
             token = account_activation_token.make_token(user)
             message = 'Hey {} \n Please click link to activate account\n{}/activate/{}/{}/'.format(
                 user.username, domain, uid, token)
@@ -54,9 +52,7 @@ class ActivateAccount(APIView):
     def get(self,request, uidb64, token):
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
-            print('####################',uid)
             user = User.objects.get(pk=uid)
-            print('####################',user)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
         if user is not None and account_activation_token.check_token(user, token):
@@ -126,14 +122,3 @@ class UserOrderView(viewsets.ModelViewSet):
         queryset = models.Order.objects.filter(owner=request.user)
         user_orders = serializers.OrderSerializer(queryset, many=True)
         return Response(user_orders.data)
-
-    # def retrieve(self,request,pk=None):
-    #     order=get_object_or_404(models.Order,pk=pk)
-    #     print(order.owner.id)
-    #     if order.owner.id == request.user.id:
-    #         serializer=serializers.OrderSerializer(order)
-    #         print(request.user.id)
-    #         return Response(serializer.data)
-    #     return Response({
-    #         "message":"U r not authenticated to view this"
-    #     })
