@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework import viewsets
@@ -12,6 +12,14 @@ from . import models
 from .permissions import IsOwner
 # Create your views here.
 from django.shortcuts import get_object_or_404
+
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.template.loader import render_to_string
+from .tokens import account_activation_token
+from django.core.mail import EmailMessage,send_mail
+
 class UserView(generics.CreateAPIView):
     serializer_class=serializers.UserSerializer
 
@@ -19,6 +27,23 @@ class UserView(generics.CreateAPIView):
     #     instance=serializer.save()
     #     instance.set_password(instance.password)
     #     instance.save()
+    def post(self,request):
+        serializer=self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user=serializer.save()
+            print(user.is_active)
+            current_site = get_current_site(request)
+            subject = 'Activate Your MySite Account'
+            domain= current_site.domain
+            uid= urlsafe_base64_encode(force_bytes(user.pk))
+            token=account_activation_token.make_token(user)
+            message='Hey {} \n Please click link to activate account\n{}/activate/{}/{}/'.format(user.username,domain,token,uid)
+            to_email =user.email
+            send_mail(subject,message,'aggrey256@gmail.com',[to_email,])
+            return Response(serializer.data)
+        return Response(serializer.errors)
+        return Response('it works')
+
 
 class LoginView(APIView):
     authentication_classes=()
