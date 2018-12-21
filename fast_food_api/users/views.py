@@ -12,7 +12,8 @@ from . import models
 from .permissions import IsOwner
 # Create your views here.
 from django.shortcuts import get_object_or_404
-
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -37,7 +38,7 @@ class UserView(generics.CreateAPIView):
             current_site = get_current_site(request)
             subject = 'Activate Your MySite Account'
             domain = current_site.domain
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
             print('######################',uid)
             token = account_activation_token.make_token(user)
             message = 'Hey {} \n Please click link to activate account\n{}/activate/{}/{}/'.format(
@@ -50,7 +51,7 @@ class UserView(generics.CreateAPIView):
 
 
 class ActivateAccount(APIView):
-    def get(request, uidb64, token):
+    def get(self,request, uidb64, token):
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
             print('####################',uid)
@@ -61,7 +62,7 @@ class ActivateAccount(APIView):
         if user is not None and account_activation_token.check_token(user, token):
             user.is_active = True
             user.save()
-            login(request, user)
+            # login(request, user)
             return Response('Account Activated')
         return Response('Couldnt perform task')
 
