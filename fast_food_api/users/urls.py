@@ -9,4 +9,6 @@ urlpatterns = [
     path('signup/',views.UserView.as_view(),name='signup'),
     path('login/',views.LoginView.as_view(),name='login'),
     path('',include(router.urls)),
+    path('activate/<uidb64>/<token>/',
+        views.ActivateAccount.as_view(), name='activate')
 ]
