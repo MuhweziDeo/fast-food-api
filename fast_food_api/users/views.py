@@ -39,7 +39,7 @@ class UserView(generics.CreateAPIView):
             domain = current_site.domain
             uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
             token = account_activation_token.make_token(user)
-            message = 'Hey {} \n Please click link to activate account\n{}/activate/{}/{}/'.format(
+            message = 'Hey {} \n Please click link to activate account\n{}/api/v1/activate/{}/{}/'.format(
                 user.username, domain, uid, token)
             to_email = user.email
             send_mail(subject, message, 'aggrey256@gmail.com', [to_email, ])
