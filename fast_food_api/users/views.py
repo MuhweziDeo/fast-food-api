@@ -24,12 +24,8 @@ from .models import User
 from rest_framework.views import APIView
 
 class UserView(generics.CreateAPIView):
+    """ User Registration view"""
     serializer_class = serializers.UserSerializer
-
-    # def perform_create(self,serializer):
-    #     instance=serializer.save()
-    #     instance.set_password(instance.password)
-    #     instance.save()
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
@@ -49,6 +45,7 @@ class UserView(generics.CreateAPIView):
 
 
 class ActivateAccount(APIView):
+    """Activate account view"""
     def get(self,request, uidb64, token):
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
@@ -64,6 +61,7 @@ class ActivateAccount(APIView):
 
 
 class LoginView(APIView):
+    """Login User"""
     authentication_classes = ()
 
     def post(self, request,):
@@ -81,18 +79,18 @@ class LoginView(APIView):
 
 
 class MenuView(viewsets.ModelViewSet):
+    """ Menu View"""
     serializer_class = serializers.MenuSerializer
     queryset = models.Menu.objects.all()
 
 
 class OrderView(viewsets.ModelViewSet):
+    """all orders views"""
     authentication_classes = (TokenAuthentication,)
     serializer_class = serializers.OrderSerializer
     queryset = models.Order.objects.all()
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser)
 
-    # def perform_create(self,serializer):
-    #     serializer.save(owner=self.request.user)
     def partial_update(self, request, pk=None):
         order = models.Order.objects.get(id=pk)
         updated_order = self.serializer_class(
@@ -103,6 +101,7 @@ class OrderView(viewsets.ModelViewSet):
 
 
 class UserOrderView(viewsets.ModelViewSet):
+    """ User orders"""
     authentication_classes = (TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, IsOwner,)
     serializer_class = serializers.OrderSerializer
