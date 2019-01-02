@@ -27,3 +27,6 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model=models.Order
         fields=('id','status','location','quantity','meal','owner')
+
+class PasswordResetSerializer(serializers.Serializer):
+    email=serializers.EmailField(max_length=40,required=True)

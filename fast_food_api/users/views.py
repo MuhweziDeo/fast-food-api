@@ -121,3 +121,6 @@ class UserOrderView(viewsets.ModelViewSet):
         queryset = models.Order.objects.filter(owner=request.user)
         user_orders = serializers.OrderSerializer(queryset, many=True)
         return Response(user_orders.data)
+
+class PasswordResetView(APIView):
+    pass
