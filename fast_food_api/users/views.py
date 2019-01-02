@@ -23,10 +23,11 @@ from django.core.mail import EmailMessage, send_mail
 from .models import User
 from rest_framework.views import APIView
 from rest_framework_jwt.settings import api_settings 
-
+from django.urls import reverse
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
 
 class UserView(generics.CreateAPIView):
     """ User Registration view"""
@@ -140,7 +141,9 @@ class PasswordResetView(APIView):
                 current_site=get_current_site(request)
                 domain=current_site.domain
                 subject="Reset Password"
-                message = 'Hey \n Please click link to reset password\n{}/api/v1/password-reset/{}/'.format(
+                # password_reset_url=reverse('password-reset',args=[token])
+                # print(password_reset_url)
+                message = 'Hey \n Please click link to reset password\n{}/api/v1/password-reset/set-password/{}/'.format(
                  domain,token)
                 to_email = user_email
                 send_mail(subject, message, 'aggrey256@gmail.com', [to_email, ])
@@ -148,4 +151,10 @@ class PasswordResetView(APIView):
             except models.User.DoesNotExist:
                 return Response('User with email {} DoesNotExist'.format(user_email))
         return Response(serializer.errors)
+
+class PasswordResetConfirmView(APIView):
+    def get(self,request,token):
+        token=jwt_decode_handler(token)
+        print(token['username'])
+        return Response(token['username'])
 
