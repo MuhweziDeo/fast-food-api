@@ -22,6 +22,11 @@ from .tokens import account_activation_token
 from django.core.mail import EmailMessage, send_mail
 from .models import User
 from rest_framework.views import APIView
+from rest_framework_jwt.settings import api_settings 
+
+
+jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
 class UserView(generics.CreateAPIView):
     """ User Registration view"""
@@ -123,4 +128,24 @@ class UserOrderView(viewsets.ModelViewSet):
         return Response(user_orders.data)
 
 class PasswordResetView(APIView):
-    pass
+    serializer_class=serializers.PasswordResetSerializer
+    def post(self,request):
+        serializer=self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            user_email=(serializer['email'].value)
+            try:
+                user=models.User.objects.get(email=user_email)
+                payload = jwt_payload_handler(user)
+                token = jwt_encode_handler(payload)
+                current_site=get_current_site(request)
+                domain=current_site.domain
+                subject="Reset Password"
+                message = 'Hey \n Please click link to reset password\n{}/api/v1/password-reset/{}/'.format(
+                 domain,token)
+                to_email = user_email
+                send_mail(subject, message, 'aggrey256@gmail.com', [to_email, ])
+                return Response("Check Email {} to continue and reset password".format(user_email))
+            except models.User.DoesNotExist:
+                return Response('User with email {} DoesNotExist'.format(user_email))
+        return Response(serializer.errors)
+
