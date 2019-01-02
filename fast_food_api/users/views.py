@@ -22,6 +22,7 @@ from .tokens import account_activation_token
 from django.core.mail import EmailMessage, send_mail
 from .models import User
 from rest_framework.views import APIView
+from rest_framework.generics import UpdateAPIView
 from rest_framework_jwt.settings import api_settings 
 from django.urls import reverse
 
@@ -153,8 +154,15 @@ class PasswordResetView(APIView):
         return Response(serializer.errors)
 
 class PasswordResetConfirmView(APIView):
-    def get(self,request,token):
+    serializer_class=serializers.SetNewPasswordSerializer
+    def put(self,request,token):
         token=jwt_decode_handler(token)
-        print(token['username'])
-        return Response(token['username'])
+        user_email=token['email']
+        user=models.User.objects.get(email=user_email)
+        serializer=self.serializer_class(data=request.data,partial=True)
+        if serializer.is_valid():
+            user.set_password(serializer.data.get('password'))
+            user.save()
+            return Response('Password Reset Successfully')
+        return Response(serializer.errors)
 

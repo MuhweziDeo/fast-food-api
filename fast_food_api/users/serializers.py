@@ -30,3 +30,14 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class PasswordResetSerializer(serializers.Serializer):
     email=serializers.EmailField(max_length=40,required=True)
+
+class SetNewPasswordSerializer(serializers.Serializer):
+    password=serializers.CharField(required=True)
+
+    def create(self,instance,validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data['password'])
+        instance.save()
+        return instance
