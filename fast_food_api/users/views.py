@@ -37,13 +37,16 @@ class UserView(generics.CreateAPIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            print(user.email)
             current_site = get_current_site(request)
             subject = 'Activate Your MySite Account'
             domain = current_site.domain
             uid = urlsafe_base64_encode(force_bytes(user.pk)).decode()
             token = account_activation_token.make_token(user)
-            message = 'Hey {} \n Please click link to activate account\n{}/api/v1/activate/{}/{}/'.format(
-                user.username, domain, uid, token)
+            email_confirm_url=reverse('activate',args=[uid,token])
+            print(email_confirm_url)
+            message = 'Hey {} \n Please click link to activate account\n{}{}'.format(
+                user.username, domain,email_confirm_url)
             to_email = user.email
             send_mail(subject, message, 'aggrey256@gmail.com', [to_email, ])
             return Response(serializer.data)
