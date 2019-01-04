@@ -142,10 +142,10 @@ class PasswordResetView(APIView):
                 current_site=get_current_site(request)
                 domain=current_site.domain
                 subject="Reset Password"
-                # password_reset_url=reverse('password-reset',args=[token])
-                # print(password_reset_url)
-                message = 'Hey \n Please click link to reset password\n{}/api/v1/password-reset/set-password/{}/'.format(
-                 domain,token)
+                password_reset_url=reverse('password-reset-confirm',args=[token])
+                print('###############', password_reset_url)
+                message = 'Hey \n Please click link to reset password\n{}{}'.format(
+                 domain,password_reset_url)
                 to_email = user_email
                 send_mail(subject, message, 'aggrey256@gmail.com', [to_email, ])
                 return Response("Check Email {} to continue and reset password".format(user_email))
